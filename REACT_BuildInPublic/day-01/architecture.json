@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "React Architecture 101: From index.html to Component Tree",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "full-mount-pipeline",
+        "label": "Mounting pipeline",
+        "focus": ["browser_dom", "main_entry", "app_component", "react_fragment", "custom_components", "native_elements"],
+        "note": "Trace how index.html mounts App.jsx and renders custom and native components."
+      },
+      {
+        "id": "fragment-rule",
+        "label": "The Fragment rule",
+        "focus": ["app_component", "react_fragment", "custom_components", "native_elements"],
+        "note": "Understand why functions return one root and how <>...</> eliminates DOM clutter."
+      }
+    ]
+  },
+  "components": [
+    { "id": "browser_dom", "type": "external", "label": "index.html", "sublabel": "<div id=\"root\">", "tag": "Host DOM", "pos": [40, 260], "size": [120, 60] },
+    { "id": "main_entry", "type": "cloud", "label": "main.jsx Entry", "sublabel": "createRoot()", "tag": "Vite Bundler", "pos": [270, 260], "size": [130, 60] },
+    { "id": "app_component", "type": "frontend", "brand": "react", "label": "App.jsx", "sublabel": "Root Component", "tag": "PascalCase", "pos": [510, 260], "size": [140, 60] },
+    { "id": "react_fragment", "type": "security", "label": "React.Fragment", "sublabel": "<> ... </>", "tag": "0 Extra Nodes", "pos": [750, 260], "size": [130, 60] },
+    { "id": "custom_components", "type": "frontend", "brand": "react", "label": "Custom Component", "sublabel": "<Header /> / <Card />", "tag": "Capitalized", "pos": [980, 150], "size": [150, 60] },
+    { "id": "native_elements", "type": "backend", "label": "Native Elements", "sublabel": "<h1>, <button>", "tag": "lowercase standard", "pos": [980, 370], "size": [150, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "React Virtual DOM Scope", "wraps": ["main_entry", "app_component", "react_fragment", "custom_components", "native_elements"] },
+    { "kind": "security-group", "label": "Component Return Scope", "wraps": ["react_fragment", "custom_components", "native_elements"] }
+  ],
+  "connections": [
+    { "id": "dom-to-entry", "from": "browser_dom", "to": "main_entry", "label": "finds #root", "variant": "emphasis" },
+    { "id": "entry-to-app", "from": "main_entry", "to": "app_component", "label": "mounts App" },
+    { "id": "app-to-fragment", "from": "app_component", "to": "react_fragment", "label": "returns <>", "variant": "emphasis" },
+    { "id": "fragment-to-custom", "from": "react_fragment", "to": "custom_components", "label": "renders child", "fromSide": "top", "toSide": "left" },
+    { "id": "fragment-to-native", "from": "react_fragment", "to": "native_elements", "label": "renders tags", "fromSide": "bottom", "toSide": "left" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "1. Entry & Mounting", "items": ["Vite loads index.html with a single <div id=\"root\">", "main.jsx uses ReactDOM.createRoot() to mount App.jsx"] },
+    { "dot": "emerald", "title": "2. Components & Naming", "items": ["Components are JavaScript functions returning JSX", "Names MUST be PascalCase (<Button /> vs native <button>)"] },
+    { "dot": "rose", "title": "3. Single Return & Fragments", "items": ["A function can only return one single root element", "React Fragments (<> ... </>) group siblings without extra DOM divs"] }
+  ]
+}

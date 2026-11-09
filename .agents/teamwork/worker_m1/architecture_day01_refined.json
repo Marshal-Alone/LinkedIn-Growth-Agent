@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "React Architecture 101: From index.html to Component Tree",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "full-mount-pipeline",
+        "label": "Full Mounting Pipeline",
+        "focus": [
+          "browser_dom",
+          "main_entry",
+          "app_component",
+          "custom_component",
+          "react_fragment",
+          "rendered_dom"
+        ],
+        "note": "Trace how index.html mounts App.jsx, renders child components, groups via Fragment, and emits clean DOM."
+      },
+      {
+        "id": "entry-and-bootstrap",
+        "label": "Entry & Root Mounting",
+        "focus": [
+          "browser_dom",
+          "main_entry",
+          "app_component"
+        ],
+        "note": "Vite serves index.html with single #root; main.jsx invokes createRoot() to mount App.jsx into host DOM."
+      },
+      {
+        "id": "fragment-and-dom",
+        "label": "Fragments & Clean DOM",
+        "focus": [
+          "custom_component",
+          "react_fragment",
+          "rendered_dom"
+        ],
+        "note": "PascalCase components return <>...</> fragments to satisfy single-expression return with zero extra DOM nodes."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "browser_dom",
+      "type": "external",
+      "label": "index.html",
+      "sublabel": "<div id=\"root\">",
+      "pos": [50, 240],
+      "size": [115, 60],
+      "tag": "Host DOM"
+    },
+    {
+      "id": "main_entry",
+      "type": "frontend",
+      "label": "main.jsx",
+      "sublabel": "createRoot().render()",
+      "pos": [235, 240],
+      "size": [125, 60],
+      "tag": "Vite Client",
+      "brand": "javascript"
+    },
+    {
+      "id": "app_component",
+      "type": "frontend",
+      "label": "App.jsx",
+      "sublabel": "Root Component",
+      "pos": [430, 240],
+      "size": [125, 60],
+      "tag": "PascalCase Root",
+      "brand": "react"
+    },
+    {
+      "id": "custom_component",
+      "type": "frontend",
+      "label": "Child Component",
+      "sublabel": "<Header /> / <Card />",
+      "pos": [625, 240],
+      "size": [135, 60],
+      "tag": "Capitalized",
+      "brand": "react"
+    },
+    {
+      "id": "react_fragment",
+      "type": "frontend",
+      "label": "React.Fragment",
+      "sublabel": "<> ... </>",
+      "pos": [830, 240],
+      "size": [125, 60],
+      "tag": "0 Extra DOM Nodes"
+    },
+    {
+      "id": "rendered_dom",
+      "type": "external",
+      "label": "Rendered DOM",
+      "sublabel": "<h1>, <button>",
+      "pos": [1025, 240],
+      "size": [125, 60],
+      "tag": "Clean DOM (No Div Soup)"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "React Virtual DOM Scope",
+      "wraps": [
+        "main_entry",
+        "app_component",
+        "custom_component",
+        "react_fragment"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "dom-to-entry",
+      "from": "browser_dom",
+      "to": "main_entry",
+      "label": "finds #root",
+      "variant": "emphasis"
+    },
+    {
+      "id": "entry-to-app",
+      "from": "main_entry",
+      "to": "app_component",
+      "label": "mounts App",
+      "variant": "default"
+    },
+    {
+      "id": "app-to-child",
+      "from": "app_component",
+      "to": "custom_component",
+      "label": "composes",
+      "variant": "default"
+    },
+    {
+      "id": "child-to-fragment",
+      "from": "custom_component",
+      "to": "react_fragment",
+      "label": "returns <>",
+      "variant": "emphasis"
+    },
+    {
+      "id": "fragment-to-rendered",
+      "from": "react_fragment",
+      "to": "rendered_dom",
+      "label": "emits tags",
+      "variant": "default"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "1. Host DOM & Vite Mounting",
+      "items": [
+        "index.html provides a single empty host container: <div id=\"root\">",
+        "main.jsx uses ReactDOM.createRoot() to mount <App /> into the host DOM"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "2. Components & PascalCase",
+      "items": [
+        "Components are plain JavaScript functions that return JSX markup",
+        "PascalCase (<Card />) tells JSX to invoke a component function vs lowercase native tag"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "3. Single Return & JSX Fragments",
+      "items": [
+        "Functions must return a single expression; JSX cannot return raw siblings",
+        "React Fragments (<> ... </>) satisfy the single return rule without extra wrapper divs"
+      ]
+    }
+  ]
+}
